@@ -52,10 +52,11 @@ class NewsgroupPostCounterSuite extends KijiSuite {
     assert(4 === outputBuffer.size)
 
     // Validate that the output is as expected.
-    assert(4 === outputBuffer(0)._2.getFirstValue())
-    assert(1 === outputBuffer(1)._2.getFirstValue())
-    assert(2 === outputBuffer(2)._2.getFirstValue())
-    assert(1 === outputBuffer(3)._2.getFirstValue())
+    val outputMap = outputBuffer.toMap
+    assert(4 === outputMap(EntityId(uri)("row01")).getFirstValue())
+    assert(2 === outputMap(EntityId(uri)("row02")).getFirstValue())
+    assert(1 === outputMap(EntityId(uri)("row03")).getFirstValue())
+    assert(1 === outputMap(EntityId(uri)("row04")).getFirstValue())
   }
 
   test("NewsgroupPostCounter counts words using scalding's local mode.") {

@@ -40,7 +40,7 @@ containing the following examples
 
 The compiled jar can be found in
 
-    target/kiji-express-examples-0.1.0-SNAPSHOT.jar
+    target/kiji-express-examples-${project.version}.jar
 
 Load the data
 -------------
@@ -48,7 +48,7 @@ Load the data
 Next, create and populate the `postings` table:
 
     kiji-schema-shell --file=ddl/postings.ddl
-    express jar lib/kiji-express-examples-0.1.0-SNAPSHOT.jar \
+    express jar lib/kiji-express-examples-${project.version}.jar \
         org.kiji.express.examples.NewsgroupLoader \
         kiji://.env/default/postings <path/to/newsgroups/root/>
 
@@ -75,7 +75,7 @@ Run the word count, outputting to hdfs:
 
 If you want to run it as a Scalding Job, you can run this instead:
 
-    express job lib/kiji-express-examples-0.1.0-SNAPSHOT.jar \
+    express job lib/kiji-express-examples-${project.version}.jar \
         org.kiji.express.examples.NewsgroupWordCount --hdfs \
         --input kiji://.env/default/postings --output ./wordcounts.tsv
 
@@ -100,7 +100,7 @@ To run the posting word counter, run:
 
 Or you can also run it as a Scalding Job:
 
-    express job lib/kiji-express-examples-0.1.0-SNAPSHOT.jar \
+    express job lib/kiji-express-examples-${project.version}.jar \
         org.kiji.express.examples.NewsgroupPostCounter --hdfs \
         --input kiji://.env/default/postings --output kiji://.env/default/postings
 
