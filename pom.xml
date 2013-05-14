@@ -29,24 +29,26 @@
   </properties>
 
   <dependencies>
-    <!-- KijiExpress -->
-    <dependency>
-      <groupId>org.kiji.express</groupId>
-      <artifactId>kiji-express</artifactId>
-      <version>${express.version}</version>
-    </dependency>
     <!-- Scala -->
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Kiji -->
     <dependency>
+      <groupId>org.kiji.express</groupId>
+      <artifactId>kiji-express</artifactId>
+      <version>${express.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.kiji.framework</groupId>
       <artifactId>kiji-framework</artifactId>
       <version>${kiji.framework.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
