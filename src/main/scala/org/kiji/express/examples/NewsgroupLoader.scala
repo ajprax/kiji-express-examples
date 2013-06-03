@@ -24,7 +24,7 @@ import java.io.File
 import scala.actors.Futures.future
 import scala.io.Source
 
-import org.kiji.express.Resources._
+import org.kiji.express.util.Resources._
 import org.kiji.schema.Kiji
 import org.kiji.schema.KijiTable
 import org.kiji.schema.KijiTableWriter
