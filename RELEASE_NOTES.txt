@@ -2,6 +2,9 @@
 
                              Kiji Express Examples Release Notes
 
+Version 0.4.0
+  * EXP-107. Update code to agree with KijiExpress package reorganization.
+
 Version 0.2.0
   * EXP-26. Updates how EntityIds are handled using KijiExpress 0.2.0.
   * CHOP-102. Explicit Scalding and Express imports are no longer required in scripts (they are now

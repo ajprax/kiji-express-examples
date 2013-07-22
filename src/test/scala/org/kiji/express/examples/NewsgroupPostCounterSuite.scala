@@ -24,7 +24,7 @@ import scala.collection.mutable.Buffer
 import com.twitter.scalding.JobTest
 
 import org.kiji.express._
-import org.kiji.express.DSL._
+import org.kiji.express.flow.DSL._
 import org.kiji.express.util.Resources._
 import org.kiji.schema.KijiTable
 import org.kiji.schema.layout.KijiTableLayout

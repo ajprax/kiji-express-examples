@@ -24,7 +24,7 @@ import com.twitter.scalding.Job
 import com.twitter.scalding.Tsv
 
 import org.kiji.express._
-import org.kiji.express.DSL._
+import org.kiji.express.flow.DSL._
 
 /**
  * Counts the words from the newsgroup table.
