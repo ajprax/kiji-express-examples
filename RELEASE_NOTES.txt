@@ -3,7 +3,10 @@
                              Kiji Express Examples Release Notes
 
 Version 0.4.0
-  * EXP-107. Update code to agree with KijiExpress package reorganization.
+  * EXP-154. Update example code to agree with refactoring of DSL and
+    TimeRange into the org.kiji.express.flow module.
+  * EXP-107. Update code to agree with KijiExpress package
+    reorganization.
 
 Version 0.2.0
   * EXP-26. Updates how EntityIds are handled using KijiExpress 0.2.0.
