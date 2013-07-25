@@ -41,10 +41,10 @@ class NewsgroupPostCounterSuite extends KijiSuite {
   }
 
   val testInput: List[(EntityId, KijiSlice[String])] = List(
-      ( EntityId(uri)("row01"), slice("info:post", (0L, "hello hello hello     hello")) ),
-      ( EntityId(uri)("row02"), slice("info:post", (0L, "hello    \nworld")) ),
-      ( EntityId(uri)("row03"), slice("info:post", (0L, "world")) ),
-      ( EntityId(uri)("row04"), slice("info:post", (0L, "hello")) ))
+      ( EntityId("row01"), slice("info:post", (0L, "hello hello hello     hello")) ),
+      ( EntityId("row02"), slice("info:post", (0L, "hello    \nworld")) ),
+      ( EntityId("row03"), slice("info:post", (0L, "world")) ),
+      ( EntityId("row04"), slice("info:post", (0L, "hello")) ))
 
 
   // A function to validate the test output.
@@ -53,10 +53,10 @@ class NewsgroupPostCounterSuite extends KijiSuite {
 
     // Validate that the output is as expected.
     val outputMap = outputBuffer.toMap
-    assert(4 === outputMap(EntityId(uri)("row01")).getFirstValue())
-    assert(2 === outputMap(EntityId(uri)("row02")).getFirstValue())
-    assert(1 === outputMap(EntityId(uri)("row03")).getFirstValue())
-    assert(1 === outputMap(EntityId(uri)("row04")).getFirstValue())
+    assert(4 === outputMap(EntityId("row01")).getFirstValue())
+    assert(2 === outputMap(EntityId("row02")).getFirstValue())
+    assert(1 === outputMap(EntityId("row03")).getFirstValue())
+    assert(1 === outputMap(EntityId("row04")).getFirstValue())
   }
 
   test("NewsgroupPostCounter counts words using scalding's local mode.") {
