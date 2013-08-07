@@ -20,7 +20,6 @@
 package org.kiji.express.examples
 
 import com.twitter.scalding.Args
-import com.twitter.scalding.Job
 import com.twitter.scalding.Tsv
 
 import org.kiji.express._
@@ -34,7 +33,7 @@ import org.kiji.express.flow._
  *       org.kiji.express.examples.NewsgroupWordCount \
  *       --input kiji://.env/default/postings --output ./wordcount.tsv
  */
-class NewsgroupWordCount(args: Args) extends Job(args) {
+class NewsgroupWordCount(args: Args) extends KijiJob(args) {
   val inUri: String = args("input")
   val outUri: String = args("output")
 

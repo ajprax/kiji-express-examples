@@ -20,7 +20,6 @@
 package org.kiji.express.examples
 
 import com.twitter.scalding.Args
-import com.twitter.scalding.Job
 
 import org.kiji.express._
 import org.kiji.express.flow._
@@ -33,7 +32,7 @@ import org.kiji.express.flow._
  *       org.kiji.express.examples.NewsgroupPostCounter \
  *       --table kiji://.env/default/postings
  */
-class NewsgroupPostCounter(args: Args) extends Job(args) {
+class NewsgroupPostCounter(args: Args) extends KijiJob(args) {
   val tableUri: String = args("table")
 
   KijiInput(tableUri)("info:post" -> 'post)
