@@ -24,7 +24,7 @@
 
   <properties>
     <express.version>0.9.0</express.version>
-    <kiji.framework.version>1.2.0-SNAPSHOT</kiji.framework.version>
+    <kiji.framework.version>1.2.1-SNAPSHOT</kiji.framework.version>
     <scalatest.version>2.0.M5b</scalatest.version>
   </properties>
 
