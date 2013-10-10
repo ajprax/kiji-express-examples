@@ -60,7 +60,7 @@ class NewsgroupWordCountSuite extends KijiSuite {
     JobTest(new NewsgroupWordCount(_))
         .arg("input", uri)
         .arg("output", "outputFile")
-        .source(KijiInput(uri)("info:post" -> 'post), testInput)
+        .source(KijiInput(uri, "info:post" -> 'post), testInput)
         .sink(Tsv("outputFile"))(validateTest)
         .run
         .finish
@@ -70,7 +70,7 @@ class NewsgroupWordCountSuite extends KijiSuite {
     JobTest(new NewsgroupWordCount(_))
         .arg("input", uri)
         .arg("output", "outputFile")
-        .source(KijiInput(uri)("info:post" -> 'post), testInput)
+        .source(KijiInput(uri, "info:post" -> 'post), testInput)
         .sink(Tsv("outputFile"))(validateTest)
         .runHadoop
         .finish

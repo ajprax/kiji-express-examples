@@ -37,7 +37,7 @@ class NewsgroupWordCount(args: Args) extends KijiJob(args) {
   val inUri: String = args("input")
   val outUri: String = args("output")
 
-  KijiInput(inUri)("info:post" -> 'post)
+  KijiInput(inUri, "info:post" -> 'post)
       // Find all the words in a newsgroup posting's text.
       .flatMap('post -> 'word) { slice: KijiSlice[String] =>
         // Get the posting text.

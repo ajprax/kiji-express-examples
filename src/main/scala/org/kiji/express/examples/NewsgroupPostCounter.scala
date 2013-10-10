@@ -35,7 +35,7 @@ import org.kiji.express.flow._
 class NewsgroupPostCounter(args: Args) extends KijiJob(args) {
   val tableUri: String = args("table")
 
-  KijiInput(tableUri)("info:post" -> 'post)
+  KijiInput(tableUri, "info:post" -> 'post)
       // Count the words in each post.
       .map('post -> 'postLength) { slice: KijiSlice[String] =>
         // Get the posting text.
@@ -51,5 +51,5 @@ class NewsgroupPostCounter(args: Args) extends KijiJob(args) {
             .length
       }
       // Write the length of each post to the specified table.
-      .write(KijiOutput(tableUri)('postLength -> "info:postLength"))
+      .write(KijiOutput(tableUri, 'postLength -> "info:postLength"))
 }

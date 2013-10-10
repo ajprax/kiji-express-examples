@@ -62,8 +62,8 @@ class NewsgroupPostCounterSuite extends KijiSuite {
   test("NewsgroupPostCounter counts words using scalding's local mode.") {
     JobTest(new NewsgroupPostCounter(_))
         .arg("table", uri)
-        .source(KijiInput(uri)("info:post" -> 'post), testInput)
-        .sink(KijiOutput(uri)('postLength -> "info:postLength"))(validateTest)
+        .source(KijiInput(uri, "info:post" -> 'post), testInput)
+        .sink(KijiOutput(uri, 'postLength -> "info:postLength"))(validateTest)
         .run
         .finish
   }
@@ -71,8 +71,8 @@ class NewsgroupPostCounterSuite extends KijiSuite {
   test("NewsgroupPostCounter counts words using hadoop.") {
     JobTest(new NewsgroupPostCounter(_))
         .arg("table", uri)
-        .source(KijiInput(uri)("info:post" -> 'post), testInput)
-        .sink(KijiOutput(uri)('postLength -> "info:postLength"))(validateTest)
+        .source(KijiInput(uri, "info:post" -> 'post), testInput)
+        .sink(KijiOutput(uri, 'postLength -> "info:postLength"))(validateTest)
         .runHadoop
         .finish
   }
