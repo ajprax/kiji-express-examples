@@ -26,6 +26,7 @@ import com.twitter.scalding.JobTest
 import org.kiji.express._
 import org.kiji.express.flow._
 import org.kiji.express.util.Resources._
+import org.kiji.schema.EntityIdFactory
 import org.kiji.schema.KijiTable
 import org.kiji.schema.layout.KijiTableLayout
 import org.kiji.schema.layout.KijiTableLayouts
@@ -50,13 +51,18 @@ class NewsgroupPostCounterSuite extends KijiSuite {
   // A function to validate the test output.
   def validateTest(outputBuffer: Buffer[(EntityId, KijiSlice[Int])]) {
     assert(4 === outputBuffer.size)
+    val eidFactory = EntityIdFactory.getFactory(layout)
 
     // Validate that the output is as expected.
     val outputMap = outputBuffer.toMap
-    assert(4 === outputMap(EntityId("row01")).getFirstValue())
-    assert(2 === outputMap(EntityId("row02")).getFirstValue())
-    assert(1 === outputMap(EntityId("row03")).getFirstValue())
-    assert(1 === outputMap(EntityId("row04")).getFirstValue())
+    assert(4 === outputMap(EntityId(eidFactory.getEntityId("row01")
+        .getHBaseRowKey())).getFirstValue())
+    assert(2 === outputMap(EntityId(eidFactory.getEntityId("row02")
+        .getHBaseRowKey())).getFirstValue())
+    assert(1 === outputMap(EntityId(eidFactory.getEntityId("row03")
+        .getHBaseRowKey())).getFirstValue())
+    assert(1 === outputMap(EntityId(eidFactory.getEntityId("row04")
+        .getHBaseRowKey())).getFirstValue())
   }
 
   test("NewsgroupPostCounter counts words using scalding's local mode.") {
