@@ -41,7 +41,7 @@ class NewsgroupPostCounterSuite extends KijiSuite {
     table.getURI().toString()
   }
 
-  val testInput: List[(EntityId, KijiSlice[String])] = List(
+  val testInput: List[(EntityId, Iterable[Cell[CharSequence]])] = List(
       ( EntityId("row01"), slice("info:post", (0L, "hello hello hello     hello")) ),
       ( EntityId("row02"), slice("info:post", (0L, "hello    \nworld")) ),
       ( EntityId("row03"), slice("info:post", (0L, "world")) ),
@@ -49,20 +49,20 @@ class NewsgroupPostCounterSuite extends KijiSuite {
 
 
   // A function to validate the test output.
-  def validateTest(outputBuffer: Buffer[(EntityId, KijiSlice[Int])]) {
+  def validateTest(outputBuffer: Buffer[(EntityId, Iterable[Cell[Int]])]) {
     assert(4 === outputBuffer.size)
     val eidFactory = EntityIdFactory.getFactory(layout)
 
     // Validate that the output is as expected.
     val outputMap = outputBuffer.toMap
     assert(4 === outputMap(EntityId(eidFactory.getEntityId("row01")
-        .getHBaseRowKey())).getFirstValue())
+        .getHBaseRowKey)).head.datum)
     assert(2 === outputMap(EntityId(eidFactory.getEntityId("row02")
-        .getHBaseRowKey())).getFirstValue())
+        .getHBaseRowKey)).head.datum)
     assert(1 === outputMap(EntityId(eidFactory.getEntityId("row03")
-        .getHBaseRowKey())).getFirstValue())
+        .getHBaseRowKey)).head.datum)
     assert(1 === outputMap(EntityId(eidFactory.getEntityId("row04")
-        .getHBaseRowKey())).getFirstValue())
+        .getHBaseRowKey)).head.datum)
   }
 
   test("NewsgroupPostCounter counts words using scalding's local mode.") {

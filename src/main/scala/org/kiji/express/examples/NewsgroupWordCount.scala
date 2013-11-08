@@ -39,9 +39,9 @@ class NewsgroupWordCount(args: Args) extends KijiJob(args) {
 
   KijiInput(inUri, "info:post" -> 'post)
       // Find all the words in a newsgroup posting's text.
-      .flatMap('post -> 'word) { slice: KijiSlice[String] =>
+      .flatMap('post -> 'word) { cells: Iterable[Cell[CharSequence]] =>
         // Get the posting text.
-        val text = slice.getFirstValue()
+        val text = cells.head.datum
 
         // Regular expression for matching words. For more information see:
         // http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html.

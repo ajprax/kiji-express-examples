@@ -4,7 +4,7 @@
 
   <groupId>org.kiji.express</groupId>
   <artifactId>kiji-express-examples</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.12.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <inceptionYear>2013</inceptionYear>
 
@@ -23,7 +23,7 @@
   </parent>
 
   <properties>
-    <express.version>0.10.0</express.version>
+    <express.version>0.12.0-SNAPSHOT</express.version>
     <kiji.framework.version>1.2.1</kiji.framework.version>
     <scalatest.version>2.0.M5b</scalatest.version>
   </properties>
