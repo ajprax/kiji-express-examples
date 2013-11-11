@@ -37,9 +37,9 @@ class NewsgroupPostCounter(args: Args) extends KijiJob(args) {
 
   KijiInput(tableUri, "info:post" -> 'post)
       // Count the words in each post.
-      .map('post -> 'postLength) { slice: KijiSlice[String] =>
+      .map('post -> 'postLength) { cells: Iterable[Cell[CharSequence]] =>
         // Get the posting text.
-        val text = slice.getFirstValue()
+        val text = cells.head.datum
 
         // Regular expression for matching words. For more information see:
         // http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html.

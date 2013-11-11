@@ -41,14 +41,14 @@ class NewsgroupWordCountSuite extends KijiSuite {
     table.getURI().toString()
   }
 
-  val testInput: List[(EntityId, KijiSlice[String])] = List(
+  val testInput: List[(EntityId, Iterable[Cell[CharSequence]])] = List(
       ( EntityId("row01"), slice("info:post", (0L, "hello hello hello     hello")) ),
       ( EntityId("row02"), slice("info:post", (0L, "hello    \nworld")) ),
       ( EntityId("row03"), slice("info:post", (0L, "world")) ),
       ( EntityId("row04"), slice("info:post", (0L, "hello")) ))
 
   // A function to validate the test output.
-  def validateTest(outputBuffer: Buffer[(String, Int)]) {
+  def validateTest(outputBuffer: Buffer[(CharSequence, Int)]) {
     val outMap = outputBuffer.toMap
 
     // Validate that the output is as expected.
