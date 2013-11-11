@@ -28,6 +28,7 @@ import org.kiji.express.flow._
 /**
  * Counts the words from the newsgroup table.
  *
+ * TODO update usage here and in post counter.
  * Usage:
  *   express hdfs <path/to/this/jar> \
  *       org.kiji.express.examples.NewsgroupWordCount \
@@ -50,12 +51,12 @@ class NewsgroupWordCount(args: Args) extends KijiJob(args) {
         // Split the text up into words.
         wordRegex
             .findAllIn(text)
-            .map { word: String => word.toLowerCase() }
+            .map { word: String => word.toLowerCase }
             .toIterable
       }
       // Count the occurrences of each word and store the count in 'count.
       .groupBy('word) { words => words.size('count) }
-      // Write the results to a tab-seperated-value file.
+      // Write the results to a tab-separated-value file.
       .write(Tsv(outUri))
 }
 

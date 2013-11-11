@@ -58,9 +58,9 @@ object NewsgroupLoader {
    */
   def main(args: Array[String]) {
     // Read in command line arguments.
-    val uri = KijiURI.newBuilder(args(0)).build()
-    val root = new File(args(1))
-    require(root.isDirectory, "Newsgroup root must be a folder (was: %s)".format(root.getPath()))
+    val uri = KijiURI.newBuilder(args(2)).build() // TODO change express script so these can be 0, 1
+    val root = new File(args(3))
+    require(root.isDirectory, "Newsgroup root must be a folder (was: %s)".format(root.getPath))
 
     doAndRelease { Kiji.Factory.open(uri) } { kiji: Kiji =>
       val tasks = root
@@ -69,22 +69,20 @@ object NewsgroupLoader {
             // Build of a series of tasks for loading each newsgroup.
             future {
               // Open a KijiTableWriter.
-              doAndRelease { kiji.openTable(uri.getTable()) } { table: KijiTable =>
+              doAndRelease { kiji.openTable(uri.getTable) } { table: KijiTable =>
                 doAndClose { table.openTableWriter() } { writer: KijiTableWriter =>
                   newsgroup
                       .listFiles()
                       .foreach { posting: File =>
                         // Get the post's contents.
                         val text = doAndClose { Source.fromFile(posting) } { source: Source =>
-                          source.mkString
+                          source.mkString // TODO figure out why this fails sometimes.
                         }
 
                         // Write the post to the table.
-                        val postPath = "%s/%s".format(newsgroup.getName(), posting.getName())
-
-                        val entityId = table.getEntityId(postPath)
+                        val entityId = table.getEntityId(newsgroup.getName, posting.getName)
                         writer.put(entityId, "info", "post", text)
-                        writer.put(entityId, "info", "group", newsgroup.getName())
+                        writer.put(entityId, "info", "group", newsgroup.getName)
                       }
                 }
               }
