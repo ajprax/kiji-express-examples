@@ -1,64 +1,95 @@
+/**
+ * (c) Copyright 2013 WibiData, Inc.
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.kiji.express.examples
 
-import com.twitter.scalding.{Tsv, Args}
+import com.twitter.scalding.Args
+import com.twitter.scalding.Tsv
 
+import org.kiji.express.Cell
+import org.kiji.express.EntityId
 import org.kiji.express.flow.KijiInput
 import org.kiji.express.flow.KijiJob
-import org.kiji.express.{EntityId, Cell}
 
 /**
- * Calculates the number of posts which contain each word regardless of category.
+ * This job calculates, for every word in the training set, the number of posts it appears in in
+ * each category divided by the number of posts it appears in in all categories.  The output of
+ * this job defines the trained parameters for our naive bayes classification model,
+ * which is evaluated in [[org.kiji.express.examples.NewsgroupClassifier]].
  *
- * @param args to the job. These get parsed in from the command line by Scalding.  Within your own
- *             KijiJob, `args("input")` will evaluate to "SomeFile.txt" if your command line contained the
- *             argument `--input SomeFile.txt`
+ * Example usage:
+ *    express job /path/to/this/jar org.kiji.express.examples.NewsgroupTFIDF \
+ *    --table kiji://.env/default/postings \
+ *    --out-file /path/to/tfidf/file
+ *
+ * The out-file will be used as input to the next phase, so remember the location.
+ *
+ * @param args to the job. `--table kiji://path/to/myTable` specifies the table to run on.
+ *     `--out-file file://path/to/outputFile` specifies the path to the output file,
+ *     which will be a Tsv.
  */
-class NewsgroupDF(args: Args) extends KijiJob(args) {
+class NewsgroupTFIDF(args: Args) extends KijiJob(args) {
   val tableURIString: String = args("table")
   val outFile: String = args("out-file")
 
-  KijiInput(tableURIString, "info:segment" -> 'segment, "info:post" -> 'postText)
-    .filter('segment) {
-      segment: Iterable[Cell[Int]] => segment.head.datum == 1
-    }
-    .flatMapTo('postText -> 'word) {
-      postText: Iterable[Cell[CharSequence]] => NewsgroupTFIDF.uniquelyTokenize(postText.head.datum)
-    }
-    .groupBy('word) {
-      _.size('documentFrequency)
-    }
-    .write(Tsv(outFile))
+  // Calculates the number of posts which contain each word regardless of category.
+  val df = KijiInput(tableURIString, "info:segment" -> 'segment, "info:post" -> 'postText)
+      // Include only items from the training segment.
+      .filter('segment) {
+        segment: Iterable[Cell[Int]] => segment.head.datum == 1
+      }
+      // Create unique tokens from the post text and create a new tuple for each one.
+      .flatMapTo('postText -> 'word) {
+        postText: Iterable[Cell[CharSequence]] =>
+            NewsgroupTFIDF.uniquelyTokenize(postText.head.datum)
+      }
+      // Get the number of posts across all groups which contain each word.
+      .groupBy('word) {
+        _.size('documentFrequency)
+      }
+
+  // Calculates the number of posts within each category which contain each word.
+  val tf = KijiInput(tableURIString, "info:segment" -> 'segment, "info:post" -> 'postText)
+      // Include only items from the training segment.
+      .filter('segment) {
+        segment: Iterable[Cell[Int]] => segment.head.datum == 1
+      }
+      // Extract the group field from the entityId.
+      .map('entityId -> 'group) { entityId: EntityId => entityId(0) }
+      // Create unique tokens from the post text and create a new tuple for each one.
+      .flatMap('postText -> 'word) {
+        postText: Iterable[Cell[CharSequence]] =>
+            NewsgroupTFIDF.uniquelyTokenize(postText.head.datum)
+      }
+      // Get the number of posts in each category which contain each word.
+      .groupBy('group, 'word) { _.size('termFrequency) }
+
+  tf.joinWithSmaller('word -> 'word, df)
+      // Calculate the weight of each word for each category.
+      .map(('termFrequency, 'documentFrequency) -> 'weight) {
+        tfdf: (Long, Long) => {
+          val (tf, df) = tfdf
+          tf.toDouble / df.toDouble
+        }
+      }
+      .write(Tsv(outFile, writeHeader = true))
 }
-
-/**
- * Calculates the number of posts within each category which contain each word.
- *
- * @param args to the job. These get parsed in from the command line by Scalding.  Within your own
- *             KijiJob, `args("input")` will evaluate to "SomeFile.txt" if your command line contained the
- *             argument `--input SomeFile.txt`
- */
-class NewsgroupTF(args: Args) extends KijiJob(args) {
-  val tableURIString: String = args("table")
-  val outFile: String = args("out-file")
-
-  KijiInput(tableURIString, "info:segment" -> 'segment, "info:post" -> 'postText)
-    .filter('segment) {
-      segment: Iterable[Cell[Int]] => segment.head.datum == 1
-    }
-    .map('entityId -> 'group) { entityId: EntityId => entityId(0) }
-    .flatMap('postText -> 'word) {
-      postText: Iterable[Cell[CharSequence]] => NewsgroupTFIDF.uniquelyTokenize(postText.head.datum)
-    }
-    .groupBy('group, 'word) { _.size('termFrequency) }
-    .write(Tsv(outFile))
-}
-
-//class NewsgroupTFIDF(args: Args) extends KijiJob(args) {
-//  val tableURIString: String = args("table")
-//  val outFile: String = args("out-file")
-//
-//
-//}
 
 object NewsgroupTFIDF {
   def tokenize(post: CharSequence): Iterable[String] = {
@@ -75,12 +106,5 @@ object NewsgroupTFIDF {
 
   def uniquelyTokenize(post: CharSequence): Set[String] = {
     tokenize(post).toSet
-  }
-
-  def tf(post: CharSequence): Map[CharSequence, Int] = {
-    tokenize(post).foldLeft(Map[CharSequence, Int]()) {
-        (acc: Map[CharSequence, Int], token: CharSequence) =>
-            acc.updated(token, acc.getOrElse(token, 0) + 1)
-    }
   }
 }

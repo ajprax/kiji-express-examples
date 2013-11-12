@@ -58,8 +58,8 @@ object NewsgroupLoader {
    */
   def main(args: Array[String]) {
     // Read in command line arguments.
-    val uri = KijiURI.newBuilder(args(2)).build() // TODO change express script so these can be 0, 1
-    val root = new File(args(3))
+    val uri = KijiURI.newBuilder(args(0)).build()
+    val root = new File(args(1))
     require(root.isDirectory, "Newsgroup root must be a folder (was: %s)".format(root.getPath))
 
     doAndRelease { Kiji.Factory.open(uri) } { kiji: Kiji =>
@@ -76,7 +76,7 @@ object NewsgroupLoader {
                       .foreach { posting: File =>
                         // Get the post's contents.
                         val text = doAndClose { Source.fromFile(posting) } { source: Source =>
-                          source.mkString // TODO figure out why this fails sometimes.
+                          source.mkString
                         }
 
                         // Write the post to the table.

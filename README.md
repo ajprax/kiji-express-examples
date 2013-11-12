@@ -59,51 +59,43 @@ correctly:
 
 You should see some newsgroup posts get printed to the screen.
 
-Read from a Kiji table
--------------------------
+Segment the data into train and test
+------------------------------------
 
-The following KijiExpress word count job reads newsgroup posts from the `info:post` column of the
-`postings` Kiji table splitting each post up into the words it is composed of. The occurrences of
-each word are then counted by using the
-[`groupBy`](https://github.com/twitter/scalding/wiki/Getting-Started#groupby) aggregation method.
-
-You have two options to run the wordcount: with a script, or a Scalding Job.
-
-Run the word count, outputting to hdfs:
-
-    express script scripts/NewsgroupWordCount.express --hdfs
-
-If you want to run it as a Scalding Job, you can run this instead:
+In order to verify the effectiveness of our classifier we must select some postings which will be
+used as test cases.
 
     express job lib/kiji-express-examples-${project.version}.jar \
-        org.kiji.express.examples.NewsgroupWordCount --hdfs \
-        --input kiji://.env/default/postings --output ./wordcounts.tsv
+        org.kiji.express.examples.NewsgroupSegmenter \
+        --table kiji://.env/default/postings
 
-Check the results of the job:
+This command randomly selects 1 out of every 10 records to include in the test segment. All others
+are included in the training segment.
 
-    hadoop fs -cat ./wordcounts.tsv/part-00000 | grep "\<foo\>"
+Calculate TFIDF for the training data
+----------------------------
 
-You should see:
-
-    foo     56
-
-Write to a Kiji table
------------------------
-
-This project also contains an example of writing to a Kiji table. NewsgroupPostCounter reads
-posts from the `info:post` column of the `postings` Kiji table and counts the number of words in
-each post which is then written to the `info:postLength` column of the `postings` table.
-
-To run the posting word counter, run:
-
-    express script scripts/NewsgroupPostCounter.express --hdfs
-
-Or you can also run it as a Scalding Job:
+We now calculate the term frequency and inverse document frequency of all items in the training
+segment.
 
     express job lib/kiji-express-examples-${project.version}.jar \
-        org.kiji.express.examples.NewsgroupPostCounter --hdfs \
-        --input kiji://.env/default/postings --output kiji://.env/default/postings
+        org.kiji.express.examples.NewsgroupTFIDF \
+        --table kiji://.env/default/postings \
+        --out-file /path/to/tfidf/storage/file
 
-Check the output in Kiji:
+These values are stored to the specified out-file for use as inputs to the classifier.
 
-    kiji scan kiji://.env/default/postings --max-rows=10
+Classify the test data
+----------------------
+
+Finally, we classify the test data and check our accuracy.
+
+    express job lib/kiji-express-examples-${project.version}.jar \
+        org.kiji.express.examples.NewsgroupClassifier \
+        --table kiji://.env/default/postings \
+        --data-root /path/to/dataset/root/directory \
+        --weights-file /path/to/tfidf/weights/file \
+        --out-file /path/to/results/file
+
+The weights-file given here should be the result of the TFIDF calculations performed above.
+The out-file will contain information about the accuracy of our classifications.

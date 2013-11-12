@@ -1,6 +1,9 @@
 
 
                              Kiji Express Examples Release Notes
+Version 0.12.0
+  * EXP-280. Updated to reflect changes to the KijiExpress API. Word count replaced with TFIDF and
+        naive bayes classifier.
 
 Version 0.5.0
   * EXP-177. Update kiji-express-examples to use KijiJob.
